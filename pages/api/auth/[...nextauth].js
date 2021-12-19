@@ -4,6 +4,9 @@ import FacebookProvider from "next-auth/providers/facebook"
 import GithubProvider from "next-auth/providers/github"
 import TwitterProvider from "next-auth/providers/twitter"
 import Auth0Provider from "next-auth/providers/auth0"
+import SpotifyProvider from "next-auth/providers/spotify"
+import spotifyApi,{ LOGIN_URL } from "../../../lib/spotify"
+
 // import AppleProvider from "next-auth/providers/apple"
 // import EmailProvider from "next-auth/providers/email"
 
@@ -51,6 +54,11 @@ export default NextAuth({
       clientId: process.env.AUTH0_ID,
       clientSecret: process.env.AUTH0_SECRET,
       issuer: process.env.AUTH0_ISSUER,
+    }),
+    SpotifyProvider({
+      clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
+      clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+      authorization: LOGIN_URL
     }),
   ],
   // The secret should be set to a reasonably long random string.
@@ -100,10 +108,16 @@ export default NextAuth({
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    // async signIn({ user, account, profile, email, credentials }) { return true },
-    // async redirect({ url, baseUrl }) { return baseUrl },
-    // async session({ session, token, user }) { return session },
-    // async jwt({ token, user, account, profile, isNewUser }) { return token }
+    async session({ session, token}) {
+      console.log("auth callback token is", token);
+      session.user.accessToken = token.acessToken;
+      session.user.refreshToken = token.refreshToken;
+      session.user.username= token.username;
+      return session;
+    },
+    // async redirect(state) {
+    //   console.log('redirect', state);
+    // },
   },
 
   // Events are useful for logging
