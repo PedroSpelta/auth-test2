@@ -6,7 +6,7 @@ export async function middleware(req) {
   if (req.nextUrl.pathname === "/middleware-protected") {
     const session = await getToken({
       req,
-      secret: process.env.SECRET,
+      secret: process.env.JWT_SECRET,
       secureCookie:
         process.env.NEXTAUTH_URL?.startsWith("https://") ??
         !!process.env.VERCEL_URL,
